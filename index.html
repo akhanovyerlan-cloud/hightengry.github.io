@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIGHTENGRY — Where Strategy Meets Action</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C; --gold-light: #E8C97A;
+    --dark: #0A0A0A; --dark-2: #111111; --dark-3: #1A1A1A; --dark-4: #222222;
+    --text: #E8E4DC; --text-muted: #8A8478; --border: rgba(201,168,76,0.15);
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--dark);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
+
+  .cursor{width:8px;height:8px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;}
+  .cursor-ring{width:32px;height:32px;border:1px solid rgba(201,168,76,0.5);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transition:transform 0.15s ease,width 0.3s,height 0.3s,opacity 0.3s;}
+
+  /* LANG BAR */
+  .lang-bar{position:fixed;top:0;left:0;right:0;z-index:200;height:36px;background:#080808;border-bottom:1px solid rgba(201,168,76,0.08);display:flex;align-items:center;justify-content:flex-end;padding:0 60px;gap:4px;}
+  .lang-btn{font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);background:none;border:none;padding:6px 10px;cursor:pointer;transition:color 0.25s;position:relative;}
+  .lang-btn::after{content:'';position:absolute;bottom:3px;left:10px;right:10px;height:1px;background:var(--gold);transform:scaleX(0);transition:transform 0.25s;}
+  .lang-btn:hover{color:var(--text);}
+  .lang-btn.active{color:var(--gold);}
+  .lang-btn.active::after{transform:scaleX(1);}
+  .lang-sep{color:rgba(201,168,76,0.25);font-size:11px;}
+
+  /* NAV */
+  nav{position:fixed;top:36px;left:0;right:0;z-index:100;padding:22px 60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid transparent;transition:all 0.4s ease;}
+  nav.scrolled{background:rgba(10,10,10,0.93);backdrop-filter:blur(24px);border-bottom-color:var(--border);padding:14px 60px;}
+
+  /* LOGO — Cormorant Garamond Semibold, uppercase, tracked */
+  .nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none;}
+  .nav-logo-icon{width:36px;height:36px;flex-shrink:0;animation:spinPropeller 14s linear infinite;filter:drop-shadow(0 0 6px rgba(233,162,0,0.3));}
+  @keyframes spinPropeller{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  .nav-logo-text{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;line-height:1;display:flex;align-items:baseline;}
+  .nav-logo-text .ht-high{color:var(--text);}
+  .nav-logo-text .ht-tengry{color:var(--gold);}
+
+  .nav-links{display:flex;gap:40px;list-style:none;}
+  .nav-links a{color:var(--text-muted);text-decoration:none;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;transition:color 0.3s;}
+  .nav-links a:hover{color:var(--gold);}
+  .nav-cta{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);padding:9px 22px;text-decoration:none;transition:all 0.3s;}
+  .nav-cta:hover{background:var(--gold);color:var(--dark);}
+
+  /* HERO */
+  .hero{min-height:100vh;padding-top:36px;display:flex;flex-direction:column;justify-content:flex-end;padding-left:60px;padding-right:60px;padding-bottom:80px;position:relative;overflow:hidden;}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 70% 40%,rgba(201,168,76,0.07) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 20% 80%,rgba(201,168,76,0.04) 0%,transparent 60%);}
+  .hero-lines{position:absolute;inset:0;overflow:hidden;}
+  .hero-line{position:absolute;height:1px;width:100%;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.13),transparent);animation:lineFloat 9s ease-in-out infinite;}
+  .hero-line:nth-child(1){top:25%;animation-delay:0s;}
+  .hero-line:nth-child(2){top:52%;animation-delay:3s;opacity:.6;}
+  .hero-line:nth-child(3){top:76%;animation-delay:6s;opacity:.35;}
+  @keyframes lineFloat{0%,100%{transform:translateX(-100%);}50%{transform:translateX(100%);}}
+  .hero-spin{position:absolute;right:40px;top:50%;width:420px;height:420px;opacity:0.04;animation:slowSpin 50s linear infinite;pointer-events:none;user-select:none;}
+  @keyframes slowSpin{from{transform:translateY(-50%) rotate(0deg);}to{transform:translateY(-50%) rotate(360deg);}}
+  .hero-label{font-size:11px;letter-spacing:0.26em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;animation:fadeUp 1s 0.3s forwards;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(60px,10vw,138px);font-weight:300;line-height:0.92;letter-spacing:-0.02em;opacity:0;animation:fadeUp 1s 0.5s forwards;}
+  .hero-title em{font-style:italic;color:var(--gold);}
+  .hero-tagline{margin-top:36px;max-width:480px;font-size:15px;line-height:1.75;color:var(--text-muted);opacity:0;animation:fadeUp 1s 0.7s forwards;}
+  .hero-bottom{margin-top:56px;display:flex;align-items:center;gap:36px;opacity:0;animation:fadeUp 1s 0.9s forwards;}
+  .hero-cta{display:inline-flex;align-items:center;gap:14px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--dark);background:var(--gold);padding:16px 34px;text-decoration:none;transition:all 0.3s;}
+  .hero-cta:hover{background:var(--gold-light);}
+  .hero-services{display:flex;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);}
+  .hero-services span{padding:0 14px;border-left:1px solid var(--border);}
+  .hero-services span:first-child{border-left:none;padding-left:0;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+
+  /* SECTIONS */
+  section{padding:120px 60px;}
+  .section-label{font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:16px;}
+  .section-label::after{content:'';flex:1;max-width:56px;height:1px;background:var(--gold);opacity:0.4;}
+  .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,5vw,62px);font-weight:300;line-height:1.1;letter-spacing:-0.01em;}
+  .section-title em{font-style:italic;color:var(--gold);}
+
+  /* ABOUT */
+  .about{background:var(--dark-2);}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:56px;align-items:start;}
+  .about-text{font-size:16px;line-height:1.8;color:var(--text-muted);}
+  .about-text p+p{margin-top:22px;}
+  .about-values{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .value-card{background:var(--dark-3);padding:30px;border:1px solid var(--border);transition:border-color 0.3s,background 0.3s;}
+  .value-card:hover{border-color:var(--gold);background:var(--dark-4);}
+  .value-icon{font-size:22px;margin-bottom:14px;}
+  .value-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:8px;}
+  .value-desc{font-size:13px;color:var(--text-muted);line-height:1.6;}
+
+  /* PROBLEMS */
+  .problems{background:var(--dark);}
+  .problems-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+  .problems-list{margin-top:36px;}
+  .problem-item{display:flex;align-items:flex-start;gap:22px;padding:22px 0;border-bottom:1px solid var(--border);transition:padding-left 0.3s;}
+  .problem-item:first-child{border-top:1px solid var(--border);}
+  .problem-item:hover{padding-left:8px;}
+  .problem-num{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--gold);min-width:22px;padding-top:2px;}
+  .problem-text{font-size:15px;line-height:1.6;}
+  .problems-visual{position:relative;display:flex;align-items:center;justify-content:center;height:380px;}
+  .problems-circle{width:260px;height:260px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;position:relative;}
+  .problems-circle::before{content:'';position:absolute;inset:22px;border-radius:50%;border:1px solid rgba(201,168,76,0.1);}
+  .problems-circle::after{content:'';position:absolute;inset:44px;border-radius:50%;border:1px solid rgba(201,168,76,0.06);}
+  .circle-text{text-align:center;z-index:1;}
+  .circle-text .big{font-family:'Cormorant Garamond',serif;font-size:60px;font-weight:300;color:var(--gold);line-height:1;}
+  .circle-text .small{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);}
+
+  /* SERVICES */
+  .services{background:var(--dark-2);}
+  .services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;margin-top:56px;}
+  .service-card{background:var(--dark-3);padding:46px;border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.4s;cursor:pointer;}
+  .service-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,0.05) 0%,transparent 60%);opacity:0;transition:opacity 0.4s;}
+  .service-card:hover{border-color:rgba(201,168,76,0.4);}
+  .service-card:hover::before{opacity:1;}
+  .service-num{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;color:rgba(201,168,76,0.14);line-height:1;margin-bottom:22px;transition:color 0.4s;}
+  .service-card:hover .service-num{color:rgba(201,168,76,0.38);}
+  .service-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;margin-bottom:22px;}
+  .service-items{list-style:none;}
+  .service-items li{font-size:13px;color:var(--text-muted);line-height:1.6;padding:5px 0;display:flex;align-items:flex-start;gap:12px;}
+  .service-items li::before{content:'→';color:var(--gold);font-size:12px;margin-top:1px;flex-shrink:0;}
+  .service-tag{position:absolute;top:46px;right:46px;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);opacity:0.45;}
+
+  /* WHY */
+  .why{background:var(--dark);}
+  .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px;}
+  .why-num{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--gold);margin-bottom:14px;letter-spacing:0.1em;}
+  .why-divider{width:30px;height:1px;background:var(--gold);opacity:0.4;margin-bottom:18px;}
+  .why-title{font-size:17px;font-weight:500;margin-bottom:10px;}
+  .why-desc{font-size:13px;color:var(--text-muted);line-height:1.7;}
+
+  /* APPROACH */
+  .approach{background:var(--dark-2);}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);margin-top:56px;position:relative;}
+  .steps::before{content:'';position:absolute;top:32px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0.2;}
+  .step{padding:0 28px;text-align:center;}
+  .step-dot{width:64px;height:64px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);background:var(--dark-2);position:relative;z-index:1;transition:all 0.3s;}
+  .step:hover .step-dot{border-color:var(--gold);background:rgba(201,168,76,0.08);transform:scale(1.1);}
+  .step-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin-bottom:10px;}
+  .step-desc{font-size:13px;color:var(--text-muted);line-height:1.7;}
+
+  /* CTA */
+  .cta-section{background:var(--dark);padding:120px 60px;text-align:center;position:relative;overflow:hidden;}
+  .cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(201,168,76,0.05) 0%,transparent 70%);}
+  .cta-title{font-family:'Cormorant Garamond',serif;font-size:clamp(46px,7vw,98px);font-weight:300;line-height:1;letter-spacing:-0.02em;position:relative;z-index:1;}
+  .cta-title em{font-style:italic;color:var(--gold);}
+  .cta-sub{font-size:15px;color:var(--text-muted);margin:28px auto;max-width:460px;line-height:1.75;position:relative;z-index:1;}
+  .cta-actions{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:44px;position:relative;z-index:1;}
+  .btn-primary{display:inline-flex;align-items:center;gap:12px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--dark);background:var(--gold);padding:17px 38px;text-decoration:none;transition:all 0.3s;}
+  .btn-primary:hover{background:var(--gold-light);transform:translateY(-2px);}
+  .btn-secondary{display:inline-flex;align-items:center;gap:12px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,0.4);padding:17px 38px;text-decoration:none;transition:all 0.3s;}
+  .btn-secondary:hover{border-color:var(--gold);background:rgba(201,168,76,0.05);}
+  .contacts{margin-top:56px;display:flex;align-items:center;justify-content:center;gap:44px;font-size:13px;color:var(--text-muted);position:relative;z-index:1;}
+  .contacts a{color:var(--text-muted);text-decoration:none;transition:color 0.3s;}
+  .contacts a:hover{color:var(--gold);}
+  .contacts-divider{width:1px;height:18px;background:var(--border);}
+
+  /* FOOTER */
+  footer{background:var(--dark-2);border-top:1px solid var(--border);padding:36px 60px;display:flex;align-items:center;justify-content:space-between;}
+  .footer-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+  .footer-logo .ht-high{color:var(--text);}
+  .footer-logo .ht-tengry{color:var(--gold);}
+  .footer-copy{font-size:12px;color:var(--text-muted);letter-spacing:0.08em;}
+  .footer-tagline{font-size:12px;color:var(--text-muted);font-style:italic;}
+
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(36px);transition:opacity 0.8s ease,transform 0.8s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+
+  @media(max-width:768px){
+    .lang-bar{padding:0 20px;}
+    nav{padding:18px 20px;top:36px;}nav.scrolled{padding:12px 20px;}
+    section{padding:70px 20px;}
+    .hero{padding:136px 20px 56px;}
+    .hero-title{font-size:52px;}
+    .about-grid,.problems-inner,.services-grid,.why-grid,.steps{grid-template-columns:1fr;}
+    .steps::before{display:none;}
+    .cta-section{padding:70px 20px;}
+    .cta-actions{flex-direction:column;}
+    footer{flex-direction:column;gap:14px;text-align:center;}
+    .contacts{flex-direction:column;gap:14px;}
+    .contacts-divider{display:none;}
+    .hero-services{flex-wrap:wrap;}
+    .hero-bottom{flex-direction:column;align-items:flex-start;}
+    .problems-visual{height:240px;}
+    .hero-spin{display:none;}
+    .nav-links,.nav-cta{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- LANG BAR -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('en')">EN</button>
+  <span class="lang-sep">|</span>
+  <button class="lang-btn" onclick="setLang('ru')">RU</button>
+  <span class="lang-sep">|</span>
+  <button class="lang-btn" onclick="setLang('kz')">ҚЗ</button>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <svg class="nav-logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <g transform="translate(100,100)">
+        <path d="M 0,0 A 90,90 0 0,1 90,-90 L 90,0 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 90,90 L 0,90 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 -90,90 L -90,0 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 -90,-90 L 0,-90 Z" fill="#E9A200"/>
+      </g>
+    </svg>
+    <div class="nav-logo-text"><span class="ht-high">HIGH</span><span class="ht-tengry">TENGRY</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about" data-i18n="nav_about">About</a></li>
+    <li><a href="#services" data-i18n="nav_services">Services</a></li>
+    <li><a href="#why" data-i18n="nav_why">Why Us</a></li>
+    <li><a href="#approach" data-i18n="nav_approach">Approach</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta" data-i18n="nav_cta">Get in Touch</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines">
+    <div class="hero-line"></div><div class="hero-line"></div><div class="hero-line"></div>
+  </div>
+  <div class="hero-spin">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+      <g transform="translate(100,100)">
+        <path d="M 0,0 A 90,90 0 0,1 90,-90 L 90,0 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 90,90 L 0,90 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 -90,90 L -90,0 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 -90,-90 L 0,-90 Z" fill="#E9A200"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-label" data-i18n="hero_label">Business Growth Partners — Kazakhstan &amp; Beyond</div>
+  <h1 class="hero-title" data-i18n-html="hero_title">We Build<br><em>Prosperity</em><br>Together</h1>
+  <p class="hero-tagline" data-i18n="hero_tagline">HIGHTENGRY is your strategic partner for business development, consulting, agency representation, and marketing — combining strategy with execution under one roof.</p>
+  <div class="hero-bottom">
+    <a href="#contact" class="hero-cta" data-i18n="hero_cta">Free Consultation →</a>
+    <div class="hero-services">
+      <span data-i18n="s1">Development</span><span data-i18n="s2">Consulting</span><span data-i18n="s3">Agency</span><span data-i18n="s4">Marketing</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="section-label" data-i18n="about_label">About HIGHTENGRY</div>
+  <h2 class="section-title reveal" data-i18n-html="about_title">A team that turns<br><em>ambition into results</em></h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p data-i18n="about_p1">HIGHTENGRY is a full-service business growth company with deep expertise in developing and promoting businesses across Kazakhstan, Central Asia, and beyond.</p>
+      <p data-i18n="about_p2">We don't just advise — we roll up our sleeves and build alongside you. From strategy to market entry, from investment attraction to digital marketing, comprehensive support at every stage.</p>
+      <p data-i18n="about_p3">Our team has hands-on experience across 10+ industries, giving us the cross-sector insight to craft solutions that truly work in your specific market context.</p>
+    </div>
+    <div class="about-values reveal">
+      <div class="value-card"><div class="value-icon">◈</div><div class="value-title" data-i18n="val1_title">Transparency</div><div class="value-desc" data-i18n="val1_desc">Clear communication, honest assessments, and full visibility into every step we take together.</div></div>
+      <div class="value-card"><div class="value-icon">◎</div><div class="value-title" data-i18n="val2_title">Performance</div><div class="value-desc" data-i18n="val2_desc">KPI-driven approach focused on measurable outcomes, not activity for its own sake.</div></div>
+      <div class="value-card"><div class="value-icon">◆</div><div class="value-title" data-i18n="val3_title">Partnership</div><div class="value-desc" data-i18n="val3_desc">Long-term relationships built on trust, shared goals, and genuine commitment to your growth.</div></div>
+      <div class="value-card"><div class="value-icon">◉</div><div class="value-title" data-i18n="val4_title">Expertise</div><div class="value-desc" data-i18n="val4_desc">Deep local market knowledge combined with international best practices and industry insight.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMS -->
+<section class="problems" id="problems">
+  <div class="problems-inner">
+    <div>
+      <div class="section-label" data-i18n="prob_label">The Challenge</div>
+      <h2 class="section-title reveal" data-i18n-html="prob_title">Problems we<br><em>solve for you</em></h2>
+      <div class="problems-list">
+        <div class="problem-item reveal"><div class="problem-num">01</div><div class="problem-text" data-i18n="prob1">Business is not growing or growing slower than the market demands</div></div>
+        <div class="problem-item reveal"><div class="problem-num">02</div><div class="problem-text" data-i18n="prob2">No clear strategy for entering new markets or geographies</div></div>
+        <div class="problem-item reveal"><div class="problem-num">03</div><div class="problem-text" data-i18n="prob3">Marketing spend that doesn't translate into measurable results</div></div>
+        <div class="problem-item reveal"><div class="problem-num">04</div><div class="problem-text" data-i18n="prob4">Lack of the right connections, partners, or investor relationships</div></div>
+        <div class="problem-item reveal"><div class="problem-num">05</div><div class="problem-text" data-i18n="prob5">Team overwhelmed by operations with no bandwidth for strategic growth</div></div>
+      </div>
+    </div>
+    <div class="problems-visual reveal">
+      <div class="problems-circle"><div class="circle-text"><div class="big">10+</div><div class="small" data-i18n="circle_text">Industries served</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-label" data-i18n="serv_label">What We Do</div>
+  <h2 class="section-title reveal" data-i18n-html="serv_title">Our <em>services</em></h2>
+  <div class="services-grid">
+    <div class="service-card reveal"><div class="service-tag">01</div><div class="service-num">01</div><div class="service-name" data-i18n="srv1_name">Business Development</div><ul class="service-items"><li data-i18n="srv1_1">Growth and scaling strategy development</li><li data-i18n="srv1_2">Market entry: Kazakhstan, Central Asia, CIS</li><li data-i18n="srv1_3">Partnership programs and sales channel development</li><li data-i18n="srv1_4">Investment attraction and deal preparation</li><li data-i18n="srv1_5">Full support at every stage of strategy execution</li></ul></div>
+    <div class="service-card reveal"><div class="service-tag">02</div><div class="service-num">02</div><div class="service-name" data-i18n="srv2_name">Consulting</div><ul class="service-items"><li data-i18n="srv2_1">Management and operational consulting</li><li data-i18n="srv2_2">Business process restructuring</li><li data-i18n="srv2_3">Financial analysis and optimization</li><li data-i18n="srv2_4">Risk assessment and crisis management</li><li data-i18n="srv2_5">Individual sessions with C-level leadership teams</li></ul></div>
+    <div class="service-card reveal"><div class="service-tag">03</div><div class="service-num">03</div><div class="service-name" data-i18n="srv3_name">Agency Services</div><ul class="service-items"><li data-i18n="srv3_1">Representing client interests in the market</li><li data-i18n="srv3_2">Finding and attracting partners, investors, clients</li><li data-i18n="srv3_3">Negotiation support and deal closing</li><li data-i18n="srv3_4">Work with government structures and tenders</li><li data-i18n="srv3_5">Turnkey agency programs</li></ul></div>
+    <div class="service-card reveal"><div class="service-tag">04</div><div class="service-num">04</div><div class="service-name" data-i18n="srv4_name">Marketing</div><ul class="service-items"><li data-i18n="srv4_1">Marketing strategy and brand platform development</li><li data-i18n="srv4_2">Digital marketing: SEO, SMM, targeted advertising</li><li data-i18n="srv4_3">PR and reputation management</li><li data-i18n="srv4_4">Content creation and visual identity</li><li data-i18n="srv4_5">Performance analytics and budget optimization</li></ul></div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why" id="why">
+  <div class="section-label" data-i18n="why_label">Why HIGHTENGRY</div>
+  <h2 class="section-title reveal" data-i18n-html="why_title">The difference<br>that <em>matters</em></h2>
+  <div class="why-grid">
+    <div class="why-card reveal"><div class="why-num">01 ·</div><div class="why-divider"></div><div class="why-title" data-i18n="why1_title">One-Stop Solution</div><div class="why-desc" data-i18n="why1_desc">Strategy and execution under one roof — no need to coordinate between multiple agencies or consultants.</div></div>
+    <div class="why-card reveal"><div class="why-num">02 ·</div><div class="why-divider"></div><div class="why-title" data-i18n="why2_title">Local Market Depth</div><div class="why-desc" data-i18n="why2_desc">Deep understanding of Kazakhstan and Central Asian markets — the relationships, regulations, and realities that matter.</div></div>
+    <div class="why-card reveal"><div class="why-num">03 ·</div><div class="why-divider"></div><div class="why-title" data-i18n="why3_title">Cross-Industry Insight</div><div class="why-desc" data-i18n="why3_desc">Experience across 10+ industries gives us pattern recognition others simply don't have.</div></div>
+    <div class="why-card reveal"><div class="why-num">04 ·</div><div class="why-divider"></div><div class="why-title" data-i18n="why4_title">Results-Oriented</div><div class="why-desc" data-i18n="why4_desc">We measure everything. KPIs are agreed upfront and tracked rigorously throughout our engagement.</div></div>
+    <div class="why-card reveal"><div class="why-num">05 ·</div><div class="why-divider"></div><div class="why-title" data-i18n="why5_title">Flexible Formats</div><div class="why-desc" data-i18n="why5_desc">Project-based, retainer, or true partnership — we adapt to what works best for your business model and budget.</div></div>
+    <div class="why-card reveal"><div class="why-num">06 ·</div><div class="why-divider"></div><div class="why-title" data-i18n="why6_title">All Scales Welcome</div><div class="why-desc" data-i18n="why6_desc">From ambitious startups to established corporations — we bring the same rigor and dedication to every engagement.</div></div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section class="approach" id="approach">
+  <div class="section-label" data-i18n="appr_label">How We Work</div>
+  <h2 class="section-title reveal" data-i18n-html="appr_title">Our approach:<br><em>4 steps</em> to results</h2>
+  <div class="steps">
+    <div class="step reveal"><div class="step-dot">1</div><div class="step-title" data-i18n="step1_title">Diagnostics</div><div class="step-desc" data-i18n="step1_desc">In-depth analysis of your business, market position, competitive landscape, and growth opportunities.</div></div>
+    <div class="step reveal"><div class="step-dot">2</div><div class="step-title" data-i18n="step2_title">Strategy</div><div class="step-desc" data-i18n="step2_desc">Developing a clear, actionable growth roadmap with defined milestones, KPIs, and resource requirements.</div></div>
+    <div class="step reveal"><div class="step-dot">3</div><div class="step-title" data-i18n="step3_title">Execution</div><div class="step-desc" data-i18n="step3_desc">Active involvement of the HIGHTENGRY team at every stage — we implement alongside you, not from the sidelines.</div></div>
+    <div class="step reveal"><div class="step-dot">4</div><div class="step-title" data-i18n="step4_title">Results</div><div class="step-desc" data-i18n="step4_desc">Measurable KPIs, transparent reporting, and a foundation built for long-term scaling and continued success.</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-bg"></div>
+  <h2 class="cta-title reveal" data-i18n-html="cta_title">Ready to grow<br><em>together?</em></h2>
+  <p class="cta-sub reveal" data-i18n="cta_sub">First consultation is free of charge. Let's discuss your business, your goals, and how HIGHTENGRY can help you get there.</p>
+  <div class="cta-actions reveal">
+    <a href="tel:+77017330708" class="btn-primary" data-i18n="cta_call">Call Us Now →</a>
+    <a href="mailto:info@hightengry.com" class="btn-secondary" data-i18n="cta_email">Send a Message</a>
+  </div>
+  <div class="contacts reveal">
+    <a href="tel:+77017330708">+7 701 733 0708</a>
+    <div class="contacts-divider"></div>
+    <a href="tel:+77001457077">+7 700 145 7077</a>
+    <div class="contacts-divider"></div>
+    <span data-i18n="cta_geo">Kazakhstan · CIS · International</span>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="26" height="26">
+      <g transform="translate(100,100)">
+        <path d="M 0,0 A 90,90 0 0,1 90,-90 L 90,0 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 90,90 L 0,90 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 -90,90 L -90,0 Z" fill="#E9A200"/>
+        <path d="M 0,0 A 90,90 0 0,1 -90,-90 L 0,-90 Z" fill="#E9A200"/>
+      </g>
+    </svg>
+    <span class="ht-high">HIGH</span><span class="ht-tengry">TENGRY</span>
+  </div>
+  <div class="footer-tagline" data-i18n="footer_tagline">Where strategy meets action</div>
+  <div class="footer-copy" data-i18n="footer_copy">© 2025 HIGHTENGRY. All rights reserved.</div>
+</footer>
+
+<script>
+const T = {
+  en: {
+    nav_about:'About',nav_services:'Services',nav_why:'Why Us',nav_approach:'Approach',nav_cta:'Get in Touch',
+    hero_label:'Business Growth Partners — Kazakhstan & Beyond',
+    hero_title:'We Build<br><em>Prosperity</em><br>Together',
+    hero_tagline:'HIGHTENGRY is your strategic partner for business development, consulting, agency representation, and marketing — combining strategy with execution under one roof.',
+    hero_cta:'Free Consultation →',s1:'Development',s2:'Consulting',s3:'Agency',s4:'Marketing',
+    about_label:'About HIGHTENGRY',about_title:'A team that turns<br><em>ambition into results</em>',
+    about_p1:'HIGHTENGRY is a full-service business growth company with deep expertise in developing and promoting businesses across Kazakhstan, Central Asia, and beyond.',
+    about_p2:"We don't just advise — we roll up our sleeves and build alongside you. From strategy to market entry, from investment attraction to digital marketing, comprehensive support at every stage.",
+    about_p3:'Our team has hands-on experience across 10+ industries, giving us the cross-sector insight to craft solutions that truly work in your specific market context.',
+    val1_title:'Transparency',val1_desc:'Clear communication, honest assessments, and full visibility into every step we take together.',
+    val2_title:'Performance',val2_desc:'KPI-driven approach focused on measurable outcomes, not activity for its own sake.',
+    val3_title:'Partnership',val3_desc:'Long-term relationships built on trust, shared goals, and genuine commitment to your growth.',
+    val4_title:'Expertise',val4_desc:'Deep local market knowledge combined with international best practices and industry insight.',
+    prob_label:'The Challenge',prob_title:'Problems we<br><em>solve for you</em>',
+    prob1:'Business is not growing or growing slower than the market demands',
+    prob2:'No clear strategy for entering new markets or geographies',
+    prob3:"Marketing spend that doesn't translate into measurable results",
+    prob4:'Lack of the right connections, partners, or investor relationships',
+    prob5:'Team overwhelmed by operations with no bandwidth for strategic growth',
+    circle_text:'Industries served',serv_label:'What We Do',serv_title:'Our <em>services</em>',
+    srv1_name:'Business Development',srv1_1:'Growth and scaling strategy development',srv1_2:'Market entry: Kazakhstan, Central Asia, CIS',srv1_3:'Partnership programs and sales channel development',srv1_4:'Investment attraction and deal preparation',srv1_5:'Full support at every stage of strategy execution',
+    srv2_name:'Consulting',srv2_1:'Management and operational consulting',srv2_2:'Business process restructuring',srv2_3:'Financial analysis and optimization',srv2_4:'Risk assessment and crisis management',srv2_5:'Individual sessions with C-level leadership teams',
+    srv3_name:'Agency Services',srv3_1:'Representing client interests in the market',srv3_2:'Finding and attracting partners, investors, clients',srv3_3:'Negotiation support and deal closing',srv3_4:'Work with government structures and tenders',srv3_5:'Turnkey agency programs',
+    srv4_name:'Marketing',srv4_1:'Marketing strategy and brand platform development',srv4_2:'Digital marketing: SEO, SMM, targeted advertising',srv4_3:'PR and reputation management',srv4_4:'Content creation and visual identity',srv4_5:'Performance analytics and budget optimization',
+    why_label:'Why HIGHTENGRY',why_title:'The difference<br>that <em>matters</em>',
+    why1_title:'One-Stop Solution',why1_desc:'Strategy and execution under one roof — no need to coordinate between multiple agencies or consultants.',
+    why2_title:'Local Market Depth',why2_desc:'Deep understanding of Kazakhstan and Central Asian markets — the relationships, regulations, and realities that matter.',
+    why3_title:'Cross-Industry Insight',why3_desc:"Experience across 10+ industries gives us pattern recognition others simply don't have.",
+    why4_title:'Results-Oriented',why4_desc:'We measure everything. KPIs are agreed upfront and tracked rigorously throughout our engagement.',
+    why5_title:'Flexible Formats',why5_desc:"Project-based, retainer, or true partnership — we adapt to what works best for your business model and budget.",
+    why6_title:'All Scales Welcome',why6_desc:'From ambitious startups to established corporations — we bring the same rigor and dedication to every engagement.',
+    appr_label:'How We Work',appr_title:'Our approach:<br><em>4 steps</em> to results',
+    step1_title:'Diagnostics',step1_desc:'In-depth analysis of your business, market position, competitive landscape, and growth opportunities.',
+    step2_title:'Strategy',step2_desc:'Developing a clear, actionable growth roadmap with defined milestones, KPIs, and resource requirements.',
+    step3_title:'Execution',step3_desc:'Active involvement of the HIGHTENGRY team at every stage — we implement alongside you, not from the sidelines.',
+    step4_title:'Results',step4_desc:'Measurable KPIs, transparent reporting, and a foundation built for long-term scaling and continued success.',
+    cta_title:'Ready to grow<br><em>together?</em>',
+    cta_sub:"First consultation is free of charge. Let's discuss your business, your goals, and how HIGHTENGRY can help you get there.",
+    cta_call:'Call Us Now →',cta_email:'Send a Message',cta_geo:'Kazakhstan · CIS · International',
+    footer_tagline:'Where strategy meets action',footer_copy:'© 2025 HIGHTENGRY. All rights reserved.'
+  },
+  ru: {
+    nav_about:'О нас',nav_services:'Услуги',nav_why:'Почему мы',nav_approach:'Подход',nav_cta:'Связаться',
+    hero_label:'Партнёр по росту бизнеса — Казахстан и весь мир',
+    hero_title:'Мы строим<br><em>процветание</em><br>вместе',
+    hero_tagline:'HIGHTENGRY — ваш стратегический партнёр по развитию бизнеса, консалтингу, агентским услугам и маркетингу. Стратегия и реализация под одной крышей.',
+    hero_cta:'Бесплатная консультация →',s1:'Развитие',s2:'Консалтинг',s3:'Агентство',s4:'Маркетинг',
+    about_label:'О компании HIGHTENGRY',about_title:'Команда, превращающая<br><em>амбиции в результаты</em>',
+    about_p1:'HIGHTENGRY — компания полного цикла по развитию бизнеса с глубокой экспертизой в продвижении компаний по всему Казахстану, Центральной Азии и за её пределами.',
+    about_p2:'Мы не просто консультируем — мы засучиваем рукава и строим вместе с вами. От разработки стратегии до выхода на рынок, от привлечения инвестиций до digital-маркетинга — сопровождение на каждом этапе.',
+    about_p3:'Наша команда имеет практический опыт в 10+ отраслях, что даёт нам межотраслевое понимание для создания решений, которые реально работают.',
+    val1_title:'Прозрачность',val1_desc:'Открытая коммуникация, честные оценки и полная видимость на каждом этапе совместной работы.',
+    val2_title:'Результативность',val2_desc:'Подход на основе KPI, сосредоточенный на измеримых результатах, а не на имитации деятельности.',
+    val3_title:'Партнёрство',val3_desc:'Долгосрочные отношения, построенные на доверии, общих целях и искренней приверженности вашему росту.',
+    val4_title:'Экспертиза',val4_desc:'Глубокое знание локального рынка в сочетании с международными лучшими практиками и отраслевыми знаниями.',
+    prob_label:'Вызовы',prob_title:'Проблемы, которые<br><em>мы решаем</em>',
+    prob1:'Бизнес не растёт или растёт медленнее рынка',
+    prob2:'Нет чёткой стратегии выхода на новые рынки или географии',
+    prob3:'Маркетинговые расходы не конвертируются в измеримые результаты',
+    prob4:'Отсутствие нужных связей, партнёров или инвесторов',
+    prob5:'Команда перегружена операционкой и не занимается стратегическим развитием',
+    circle_text:'Отраслей охвачено',serv_label:'Что мы делаем',serv_title:'Наши <em>услуги</em>',
+    srv1_name:'Бизнес-развитие',srv1_1:'Разработка стратегии роста и масштабирования',srv1_2:'Выход на рынки: Казахстан, Центральная Азия, СНГ',srv1_3:'Партнёрские программы и развитие каналов сбыта',srv1_4:'Привлечение инвестиций и подготовка к сделкам',srv1_5:'Полное сопровождение на всех этапах реализации стратегии',
+    srv2_name:'Консалтинг',srv2_1:'Управленческий и операционный консалтинг',srv2_2:'Реструктуризация бизнес-процессов',srv2_3:'Финансовый анализ и оптимизация',srv2_4:'Оценка рисков и антикризисное управление',srv2_5:'Индивидуальные сессии с C-level командой',
+    srv3_name:'Агентские услуги',srv3_1:'Представление интересов клиента на рынке',srv3_2:'Поиск и привлечение партнёров, инвесторов, клиентов',srv3_3:'Сопровождение переговоров и заключение сделок',srv3_4:'Работа с государственными структурами и тендерами',srv3_5:'Агентские программы под ключ',
+    srv4_name:'Маркетинг',srv4_1:'Разработка маркетинговой стратегии и бренд-платформы',srv4_2:'Digital-маркетинг: SEO, SMM, контекстная реклама',srv4_3:'PR и управление репутацией',srv4_4:'Создание контента и визуальной идентичности',srv4_5:'Аналитика эффективности и оптимизация бюджетов',
+    why_label:'Почему HIGHTENGRY',why_title:'Отличие, которое<br><em>имеет значение</em>',
+    why1_title:'Комплексное решение',why1_desc:'Стратегия и реализация под одной крышей — не нужно координировать несколько агентств или консультантов.',
+    why2_title:'Знание локального рынка',why2_desc:'Глубокое понимание казахстанского и центральноазиатского рынков — связи, регуляторика и реалии, которые важны.',
+    why3_title:'Межотраслевой опыт',why3_desc:'Опыт в 10+ отраслях даёт нам понимание закономерностей, которого нет у других.',
+    why4_title:'Ориентация на результат',why4_desc:'Мы измеряем всё. KPI согласуются заранее и строго отслеживаются на протяжении всего сотрудничества.',
+    why5_title:'Гибкие форматы',why5_desc:'Проект, ретейнер или партнёрство — адаптируемся к тому, что лучше подходит для вашей бизнес-модели.',
+    why6_title:'Любой масштаб',why6_desc:'От амбициозных стартапов до крупных корпораций — одинаковая строгость и преданность делу в каждом проекте.',
+    appr_label:'Как мы работаем',appr_title:'Наш подход:<br><em>4 шага</em> к результату',
+    step1_title:'Диагностика',step1_desc:'Глубокий анализ вашего бизнеса, позиции на рынке, конкурентной среды и возможностей для роста.',
+    step2_title:'Стратегия',step2_desc:'Разработка чёткой дорожной карты роста с определёнными этапами, KPI и ресурсными требованиями.',
+    step3_title:'Реализация',step3_desc:'Активное участие команды HIGHTENGRY на каждом этапе — мы работаем плечом к плечу с вами.',
+    step4_title:'Результат',step4_desc:'Измеримые KPI, прозрачная отчётность и фундамент для долгосрочного масштабирования и устойчивого успеха.',
+    cta_title:'Готовы расти<br><em>вместе?</em>',
+    cta_sub:'Первичная консультация — бесплатно. Давайте обсудим ваш бизнес, цели и то, как HIGHTENGRY поможет вам их достичь.',
+    cta_call:'Позвонить нам →',cta_email:'Написать нам',cta_geo:'Казахстан · СНГ · Международный',
+    footer_tagline:'Там, где стратегия встречается с действием',footer_copy:'© 2025 HIGHTENGRY. Все права защищены.'
+  },
+  kz: {
+    nav_about:'Біз туралы',nav_services:'Қызметтер',nav_why:'Неліктен біз',nav_approach:'Тәсіл',nav_cta:'Байланысу',
+    hero_label:'Бизнес өсімінің серіктесі — Қазақстан және одан тыс',
+    hero_title:'Біз бірге<br><em>гүлденуді</em><br>құрамыз',
+    hero_tagline:'HIGHTENGRY — бизнесті дамыту, консалтинг, агенттік қызметтер және маркетинг бойынша стратегиялық серіктесіңіз. Стратегия мен іске асыру бір төбе астында.',
+    hero_cta:'Тегін кеңес алу →',s1:'Даму',s2:'Консалтинг',s3:'Агенттік',s4:'Маркетинг',
+    about_label:'HIGHTENGRY туралы',about_title:'Амбицияларды<br><em>нәтижеге айналдыратын</em> команда',
+    about_p1:'HIGHTENGRY — Қазақстан, Орталық Азия және одан тыс аймақтарда бизнесті дамытуда терең тәжірибесі бар толық цикл компаниясы.',
+    about_p2:'Біз тек кеңес бермейміз — сіздермен бірге жұмыс жасаймыз. Стратегия әзірлеуден бастап нарыққа шығуға дейін, инвестиция тартудан digital-маркетингке дейін — барлық кезеңде толық қолдау.',
+    about_p3:'Командамыздың 10-дан астам салада тәжірибесі бар, бұл нарық контекстіңізде шынымен жұмыс істейтін шешімдер жасауға мүмкіндік береді.',
+    val1_title:'Ашықтық',val1_desc:'Нақты коммуникация, адал бағалау және бірлескен жұмыстың әр қадамын толық бақылау.',
+    val2_title:'Нәтижелілік',val2_desc:'KPI негізіндегі тәсіл — өлшенетін нәтижелерге бағытталған, бос белсенділікке емес.',
+    val3_title:'Серіктестік',val3_desc:'Сенімге, ортақ мақсаттарға және өсіміңізге шынайы адалдыққа негізделген ұзақ мерзімді қарым-қатынас.',
+    val4_title:'Тәжірибе',val4_desc:'Жергілікті нарық туралы терең білім халықаралық тәжірибе мен салалық түсінікпен ұштасады.',
+    prob_label:'Қиындықтар',prob_title:'Біз шешетін<br><em>мәселелер</em>',
+    prob1:'Бизнес өспейді немесе нарықтан баяу өседі',
+    prob2:'Жаңа нарықтарға немесе географияларға шығудың нақты стратегиясы жоқ',
+    prob3:'Маркетинг шығындары өлшенетін нәтижелерге айналмайды',
+    prob4:'Дұрыс байланыстардың, серіктестердің немесе инвесторлардың жетіспеушілігі',
+    prob5:'Команда операциялық жұмыспен шамадан тыс жүктелген, стратегиялық дамуға уақыт жоқ',
+    circle_text:'Сала қамтылды',serv_label:'Біз не жасаймыз',serv_title:'Біздің <em>қызметтеріміз</em>',
+    srv1_name:'Бизнесті дамыту',srv1_1:'Өсу және масштабтау стратегиясын әзірлеу',srv1_2:'Нарыққа шығу: Қазақстан, Орталық Азия, ТМД',srv1_3:'Серіктестік бағдарламалар және өткізу арналарын дамыту',srv1_4:'Инвестиция тарту және мәмілеге дайындық',srv1_5:'Стратегияны іске асырудың барлық кезеңінде толық қолдау',
+    srv2_name:'Консалтинг',srv2_1:'Басқарушылық және операциялық консалтинг',srv2_2:'Бизнес-процестерді қайта құрылымдау',srv2_3:'Қаржылық талдау және оңтайландыру',srv2_4:'Тәуекелдерді бағалау және дағдарысқа қарсы басқару',srv2_5:'C-level командамен жеке сессиялар',
+    srv3_name:'Агенттік қызметтер',srv3_1:'Нарықта клиент мүдделерін білдіру',srv3_2:'Серіктестер, инвесторлар, клиенттерді іздеу және тарту',srv3_3:'Келіссөздерге қолдау және мәмілелерді жабу',srv3_4:'Мемлекеттік құрылымдармен және тендерлермен жұмыс',srv3_5:'Агенттік бағдарламалар кілттен кілтке дейін',
+    srv4_name:'Маркетинг',srv4_1:'Маркетинг стратегиясы мен бренд-платформасын әзірлеу',srv4_2:'Digital-маркетинг: SEO, SMM, мақсатты жарнама',srv4_3:'PR және беделді басқару',srv4_4:'Контент және визуалдық сәйкестік жасау',srv4_5:'Тиімділікті талдау және бюджеттерді оңтайландыру',
+    why_label:'Неліктен HIGHTENGRY',why_title:'Маңызды<br><em>айырмашылық</em>',
+    why1_title:'Кешенді шешім',why1_desc:'Стратегия мен іске асыру бір төбе астында — бірнеше агенттікті немесе консультанттарды үйлестірудің қажеті жоқ.',
+    why2_title:'Жергілікті нарықты білу',why2_desc:'Қазақстан мен Орталық Азия нарықтарын терең түсіну — маңызды байланыстар, реттеу ережелері мен шындықтар.',
+    why3_title:'Салааралық тәжірибе',why3_desc:'10-дан астам саладағы тәжірибе басқаларда жоқ заңдылықтарды тануға мүмкіндік береді.',
+    why4_title:'Нәтижеге бағытталу',why4_desc:'Біз бәрін өлшейміз. KPI алдын-ала келісіліп, ынтымақтастық барысында қатаң бақыланады.',
+    why5_title:'Икемді форматтар',why5_desc:'Жоба, ретейнер немесе серіктестік — бизнес-моделіңіз бен бюджетіңізге ең қолайлы форматқа бейімделеміз.',
+    why6_title:'Кез келген масштаб',why6_desc:'Амбициялы стартаптардан ірі корпорацияларға дейін — әр жобада бірдей мұқияттылық пен адалдық.',
+    appr_label:'Біз қалай жұмыс жасаймыз',appr_title:'Біздің тәсіл:<br><em>4 қадам</em> нәтижеге',
+    step1_title:'Диагностика',step1_desc:'Бизнесіңізді, нарықтағы позицияны, бәсекелестік ортаны және өсу мүмкіндіктерін терең талдау.',
+    step2_title:'Стратегия',step2_desc:'Анықталған кезеңдері, KPI және ресурстық талаптары бар нақты өсу жол картасын әзірлеу.',
+    step3_title:'Іске асыру',step3_desc:'HIGHTENGRY командасының барлық кезеңдегі белсенді қатысуы — біз сіздермен иық тіресе жұмыс жасаймыз.',
+    step4_title:'Нәтиже',step4_desc:'Өлшенетін KPI, ашық есептілік және ұзақ мерзімді масштабтау мен тұрақты табысқа негіз.',
+    cta_title:'Бірге<br><em>өсуге дайынсыз ба?</em>',
+    cta_sub:'Алғашқы кеңес — тегін. Бизнесіңізді, мақсаттарыңызды және HIGHTENGRY оларға жетуге қалай көмектесетінін талқылайық.',
+    cta_call:'Қоңырау шалу →',cta_email:'Хабарлама жіберу',cta_geo:'Қазақстан · ТМД · Халықаралық',
+    footer_tagline:'Стратегия іспен кездесетін жер',footer_copy:'© 2025 HIGHTENGRY. Барлық құқықтар қорғалған.'
+  }
+};
+
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === lang.toUpperCase() || (lang==='kz' && b.textContent.trim()==='ҚЗ'));
+  });
+  const d = T[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => { if(d[el.dataset.i18n]!==undefined) el.textContent = d[el.dataset.i18n]; });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { if(d[el.dataset.i18nHtml]!==undefined) el.innerHTML = d[el.dataset.i18nHtml]; });
+  document.documentElement.lang = lang==='kz'?'kk':lang;
+}
+
+// Cursor
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.transform=`translate(${mx-4}px,${my-4}px)`;});
+(function ar(){rx+=(mx-rx-16)*.12;ry+=(my-ry-16)*.12;ring.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(ar);})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='48px';ring.style.height='48px';ring.style.opacity='.5';});
+  el.addEventListener('mouseleave',()=>{ring.style.width='32px';ring.style.height='32px';ring.style.opacity='1';});
+});
+
+// Nav scroll
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60));
+
+// Reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
